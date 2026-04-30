@@ -1,0 +1,14 @@
+Mammography Report Classification
+Copyright 2026 wfrancis
+
+This repository includes code adapted from the public Kaggle notebook
+"Multi-Head TF-IDF Ensemble+Binary Classification" by Saurabh Raj Varma:
+
+  https://www.kaggle.com/code/saurabhrajvarma/multi-head-tf-idf-ensemble-binary-classification
+
+The adapted public notebook code is distributed under the Apache License,
+Version 2.0, consistent with Kaggle public notebook code licensing.
+
+Modifications in this repository include Kaggle input path handling,
+submission iteration experiments, and per-class threshold changes used by
+the final submitted script.

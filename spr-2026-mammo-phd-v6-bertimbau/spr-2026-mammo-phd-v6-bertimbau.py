@@ -1,4 +1,4 @@
-# [v6b] BERTimbau-large OOF features + Claude rules + baseline ensemble.
+# [v6b] BERTimbau-large OOF features + baseline ensemble.
 # Strategy:
 #   - Load BERTimbau OOF logits (computed from 5 folds, aligned to train.csv) as
 #     stacking features for train.
@@ -8,7 +8,6 @@
 #     LightGBM and SVC ensemble heads.
 #   - 5-fold OOF macro-F1 gate: if final OOF macro-F1 < 0.74, write the
 #     baseline submission (no BERT) instead — protects against v3-style regressions.
-#   - try/except import for Claude validated rules.
 from pathlib import Path
 def _resolve():
     c = Path("/kaggle/input/spr-2026-mammography-report-classification")
@@ -85,17 +84,6 @@ BERT_BATCH = 8
 # to the baseline-without-bert submission. 0.74 is "safer than 0.81 baseline OOF
 # of ~0.7522 minus a small slack" — protects against v3 regression.
 OOF_GATE = 0.74
-
-# [v6b] try-import of Claude validated rules. If unavailable, use a no-op.
-try:
-    sys.path.insert(0, '/kaggle/input/claude-validated-rules')
-    sys.path.insert(0, '/tmp')
-    from claude_validated_rules import apply_claude_rules
-    print('[v6b] claude_validated_rules: imported.')
-except Exception as e:
-    print(f'[v6b] claude_validated_rules: not available ({type(e).__name__}); using identity.')
-    def apply_claude_rules(df, preds, *_args, **_kwargs):
-        return preds
 
 # ---
 # ─── PREPROCESSING ─────────────────────────────────────────────────────────────
@@ -533,21 +521,9 @@ except Exception as e:
     oof_f1 = -1.0
 
 
-# Apply safe rules then Claude-validated rules
+# Apply safe rules
 test["target"] = preds
 test['target'] = test.apply(apply_safe_rules, axis=1)
-
-# [v6b] Claude validated rules (try/except imported at top). Pass test+preds as
-# numpy array for flexibility.
-try:
-    new_preds = apply_claude_rules(test, test['target'].values.copy())
-    if isinstance(new_preds, (list, np.ndarray)) and len(new_preds) == len(test):
-        test['target'] = np.asarray(new_preds, dtype=int)
-        print('[v6b] claude_validated_rules applied.')
-    else:
-        print('[v6b] claude_validated_rules returned bad shape; ignoring.')
-except Exception as e:
-    print(f'[v6b] claude_validated_rules error: {type(e).__name__}: {e}; ignoring.')
 
 # ---
 # ─── SAVE SUBMISSION ───────────────────────────────────────────────────────────

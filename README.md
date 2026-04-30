@@ -63,6 +63,7 @@ See [`spr-2026-mammo-multihead-thresh-tuned/spr-2026-mammo-multihead-thresh-tune
 .
 ├── README.md
 ├── LICENSE
+├── NOTICE
 └── spr-2026-mammo-*/                    # one folder per submission iteration
     └── spr-2026-mammo-*.py              # the submission script
 ```
@@ -91,7 +92,8 @@ The script writes `submission.csv` to the working directory.
 
 ## License
 
-[MIT](LICENSE).
+[Apache License 2.0](LICENSE). See [NOTICE](NOTICE) for attribution and
+modification notes.
 
 ## Citation (dataset / competition)
 
